@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costos - Happy Farmer</title>
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+
+<div class="app">
+
+<aside>
+
+<div class="brand">
+<div class="brand-icon"></div>
+<div>
+<h1>Happy Farmer</h1>
+<p>Sistema Ganadero</p>
+</div>
+</div>
+
+<p class="menu-title">Navegación</p>
+
+<a class="nav-link active" href="dashboard.html">Inicio</a>
+
+<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
+
+<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
+
+<a class="nav-link" href="generarReporte.html">Reportes</a>
+
+<a class="nav-link" href="costos.html">Costos</a>
+
+<a class="nav-link" href="configuracion.html">Configuración</a>
+
+
+<a class="nav-link" href="index.html">Cerrar sesión</a>
+
+
+</aside>
+    <section id="costos" class="screen active">
+        <div class="cards-3">
+            <article class="card">
+                <h3>Gasto total del mes</h3>
+                <div class="metric">₡420 000</div>
+                <p>Resumen de los gastos operativos registrados.</p>
+            </article>
+            <article class="card">
+                <h3>Mayor categoría</h3>
+                <div class="metric">Alimento</div>
+                <p>La categoría con más impacto este mes.</p>
+            </article>
+            <article class="card">
+                <h3>Registros activos</h3>
+                <div class="metric">24</div>
+                <p>Cantidad de gastos ingresados en el periodo actual.</p>
+            </article>
+        </div>
+
+        <article class="card">
+            <div class="panel-title">
+                <div>
+                    <h3>Registrar gasto</h3>
+                    <p class="muted">Control de costos por categoría y fecha.</p>
+                </div>
+            </div>
+            <form class="form-grid">
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select>
+                        <option>Alimento</option>
+                        <option>Medicamentos</option>
+                        <option>Transporte</option>
+                        <option>Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Monto</label>
+                    <input type="number" placeholder="0.00" />
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" />
+                </div>
+                <div class="form-group">
+                    <label>Método</label>
+                    <select>
+                        <option>Efectivo</option>
+                        <option>Transferencia</option>
+                        <option>Tarjeta</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>Descripción</label>
+                    <textarea rows="3" placeholder="Detalle del gasto"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary">Guardar gasto</button>
+                </div>
+            </form>
+        </article>
+
+        <article class="card" style="margin-top:20px;">
+            <h3>Listado de gastos</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Categoría</th>
+                            <th>Descripción</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-03-01</td>
+                            <td>Alimento</td>
+                            <td>Compra de concentrado</td>
+                            <td>₡180 000</td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-04</td>
+                            <td>Medicamentos</td>
+                            <td>Antibióticos</td>
+                            <td>₡75 000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+    </section>
+</body>
+</html>
