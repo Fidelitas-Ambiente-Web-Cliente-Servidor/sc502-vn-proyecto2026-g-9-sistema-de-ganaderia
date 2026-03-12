@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer - Panel</title>
+  <link rel="stylesheet" href="styles/styles.css" />
+</head>
+<body>
+  <div id="systemView" class="app">
+    <aside>
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div>
+          <h1>Happy Farmer</h1>
+          <p>Gestión ganadera digital</p>
+        </div>
+      </div>
+ 
+      <p class="menu-title">Navegación</p>
+      <button class="nav-link active" data-screen="inicio">Inicio</button>
+      <button class="nav-link" data-screen="animales"> Gestión de animales</button>
+      <button class="nav-link" data-screen="salud"> Salud animal</button>
+      <button class="nav-link" data-screen="costos"> Costos</button>
+      <button class="nav-link" data-screen="reportes"> Generar reporte</button>
+      <button class="nav-link" data-screen="configuracion"> Configuración</button>
+      <button class="nav-link" id="btn-cerrar">Cerrar sesión</button>
+    </aside>
+ 
+    <main>
+      <header>
+        <div class="header-text">
+          <h2>Panel principal</h2>
+          <p>Resumen rápido de la finca con accesos directos, alertas y métricas importantes.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="activarPantalla('animales')">+ Registrar animal</button>
+          <button class="btn btn-secondary" onclick="activarPantalla('salud')">+ Registrar vacuna</button>
+          <button class="btn btn-primary" onclick="activarPantalla('costos')">+ Registrar gasto</button>
+        </div>
+      </header>
+ 
+      <section id="inicio" class="screen active">
+        <div class="cards-4">
+          <article class="card">
+            <h3>Total de animales</h3>
+            <div class="metric">128</div>
+            <p>Inventario actualizado.</p>
+            <span class="badge green">+4 este mes</span>
+          </article>
+          <article class="card">
+            <h3>Vacunas pendientes</h3>
+            <div class="metric">6</div>
+            <p>Animales que requieren atención.</p>
+            <span class="badge yellow">Revisar hoy</span>
+          </article>
+          <article class="card">
+            <h3>Gastos del mes</h3>
+            <div class="metric">₡420 000</div>
+            <p>Alimentación, salud, etc.</p>
+            <span class="badge red">+8% vs mes pasado</span>
+          </article>
+          <article class="card">
+            <h3>Reportes generados</h3>
+            <div class="metric">12</div>
+            <p>Documentos exportados.</p>
+            <span class="badge green">Actualizado</span>
+          </article>
+        </div>
+ 
+        <div class="cards-2">
+          <article class="card">
+            <div class="panel-title">
+              <h3>Alertas recientes</h3>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item warning">
+                <strong>Vacuna pendiente:</strong> Luna debe recibir refuerzo el 15 de marzo.
+              </div>
+              <div class="alert-item danger">
+                <strong>Tratamiento atrasado:</strong> Toro 18 tiene control veterinario vencido.
+              </div>
+            </div>
+          </article>
+ 
+          <article class="card">
+            <div class="panel-title">
+              <h3>Atajos rápidos</h3>
+            </div>
+            <div class="cards-2" style="margin-bottom:0;">
+              <button class="btn btn-secondary" onclick="activarPantalla('animales')">Ver animales</button>
+              <button class="btn btn-secondary" onclick="activarPantalla('costos')">Ver costos</button>
+            </div>
+          </article>
+        </div>
+      </section>
+ 
+      <section id="animales" class="screen">
+        <article class="card">
+          <div class="panel-title">
+            <div>
+              <h3>Gestión de animales</h3>
+              <p class="muted">Listar, buscar, filtrar animales.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Raza</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>A-001</td><td>Luna</td><td>Jersey</td><td>Activo</td></tr>
+                <tr><td>A-002</td><td>Estrella</td><td>Holstein</td><td>Activo</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+ 
+      <section id="salud" class="screen"><article class="card"><h3>Salud</h3></article></section>
+      <section id="costos" class="screen"><article class="card"><h3>Costos</h3></article></section>
+      <section id="reportes" class="screen"><article class="card"><h3>Reportes</h3></article></section>
+      <section id="configuracion" class="screen"><article class="card"><h3>Configuración</h3></article></section>
+ 
+    </main>
+  </div>
+ 
+  <script src="script/dashboard.js"></script>
+</body>
+</html>
