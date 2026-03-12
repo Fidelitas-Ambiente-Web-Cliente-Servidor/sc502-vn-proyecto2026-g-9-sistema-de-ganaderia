@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Happy Farmer - Reportes</title>
+
+<link rel="stylesheet" href="styles/styles.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+
+<aside>
+
+<div class="brand">
+<div class="brand-icon"></div>
+<div>
+<h1>Happy Farmer</h1>
+<p>Sistema Ganadero</p>
+</div>
+</div>
+
+<p class="menu-title">Navegación</p>
+
+<a class="nav-link" href="dashboard.html">Inicio</a>
+
+<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
+
+<a class="nav-link active" href="generarReporte.html">Reportes</a>
+
+<a class="nav-link" href="index.html">Cerrar sesión</a>
+
+</aside>
+
+<main>
+
+<header>
+
+<div class="header-text">
+<h2>Generación de Reportes</h2>
+<p>Consulta información del sistema ganadero</p>
+</div>
+
+</header>
+
+<section class="card">
+
+<div class="panel-title">
+<h3>Generar nuevo reporte</h3>
+</div>
+
+<form class="form-grid">
+
+<div class="form-group">
+<label>Tipo de reporte</label>
+<select>
+<option>Reporte de animales</option>
+<option>Reporte de salud animal</option>
+<option>Reporte de costos</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Fecha inicio</label>
+<input type="date">
+</div>
+
+<div class="form-group">
+<label>Fecha fin</label>
+<input type="date">
+</div>
+
+<div class="form-group full">
+<label>Observaciones</label>
+<textarea rows="3"></textarea>
+</div>
+
+<div class="form-group full">
+<button class="btn btn-primary">Generar reporte</button>
+</div>
+
+</form>
+
+</section>
+
+<section class="card">
+
+<div class="panel-title">
+<h3>Reportes generados</h3>
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Reporte</th>
+<th>Fecha</th>
+<th>Usuario</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<td>Inventario de animales</td>
+<td>10/03/2026</td>
+<td>Administrador</td>
+<td class="actions">
+<button class="mini-blue">Ver</button>
+<button class="mini-green">Descargar</button>
+</td>
+</tr>
+
+<tr>
+<td>Salud animal</td>
+<td>08/03/2026</td>
+<td>Administrador</td>
+<td class="actions">
+<button class="mini-blue">Ver</button>
+<button class="mini-green">Descargar</button>
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Happy Farmer - Salud Animal</title>
+
+<link rel="stylesheet" href="styles/styles.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<aside>
+
+<div class="brand">
+<div class="brand-icon"></div>
+<div>
+<h1>Happy Farmer</h1>
+<p>Sistema Ganadero</p>
+</div>
+</div>
+
+<p class="menu-title">Navegación</p>
+
+<a class="nav-link" href="dashboard.html">Inicio</a>
+
+<a class="nav-link active" href="saludAnimal.html">Salud Animal</a>
+
+<a class="nav-link" href="generarReporte.html">Reportes</a>
+
+<a class="nav-link" href="index.html">Cerrar sesión</a>
+
+</aside>
+
+
+<main>
+
+<header>
+
+<div class="header-text">
+<h2>Salud Animal</h2>
+<p>Registro sanitario del ganado</p>
+</div>
+
+</header>
+
+
+<section class="card">
+
+<div class="panel-title">
+<h3>Registrar control sanitario</h3>
+</div>
+
+<form class="form-grid">
+
+<div class="form-group">
+<label>Animal</label>
+<select>
+<option>Luna</option>
+<option>Estrella</option>
+<option>Manchada</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Tipo de control</label>
+<select>
+<option>Vacunación</option>
+<option>Desparasitación</option>
+<option>Chequeo veterinario</option>
+<option>Tratamiento</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Fecha</label>
+<input type="date">
+</div>
+
+<div class="form-group">
+<label>Veterinario</label>
+<input type="text" placeholder="Nombre del veterinario">
+</div>
+
+<div class="form-group full">
+<label>Observaciones</label>
+<textarea rows="3"></textarea>
+</div>
+
+<div class="form-group full">
+<button class="btn btn-primary">Guardar registro</button>
+</div>
+
+</form>
+
+</section>
+
+
+
+<section class="card">
+
+<div class="panel-title">
+<h3>Historial sanitario</h3>
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Animal</th>
+<th>Control</th>
+<th>Fecha</th>
+<th>Veterinario</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<td>Luna</td>
+<td>Vacunación</td>
+<td>10/03/2026</td>
+<td>Dr. Pérez</td>
+<td class="actions">
+<button class="mini-blue">Editar</button>
+<button class="mini-red">Eliminar</button>
+</td>
+</tr>
+
+<tr>
+<td>Estrella</td>
+<td>Chequeo</td>
+<td>05/03/2026</td>
+<td>Dra. Ramírez</td>
+<td class="actions">
+<button class="mini-blue">Editar</button>
+<button class="mini-red">Eliminar</button>
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>
