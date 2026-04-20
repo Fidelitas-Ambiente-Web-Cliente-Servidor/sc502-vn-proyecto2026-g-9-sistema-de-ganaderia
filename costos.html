@@ -1,135 +1,172 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costos - Happy Farmer</title>
-    <link rel="stylesheet" href="styles/styles.css">
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer – Costos</title>
+  <link rel="stylesheet" href="styles/styles.css" />
 </head>
 <body>
-
 <div class="app">
+  <aside>
+    <div class="brand"><div class="brand-icon">🐄</div><div><h1>Happy Farmer</h1><p>Gestión ganadera</p></div></div>
+    <p class="menu-title">Menú principal</p>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="gestionAnimal.html">Gestión de animales</a>
+    <a class="nav-link" href="saludAnimal.html">Salud animal</a>
+    <a class="nav-link" href="costos.html">Costos</a>
+    <a class="nav-link" href="generarReporte.html">Reportes</a>
+    <p class="menu-title">Cuenta</p>
+    <a class="nav-link" href="configuracion.html">Configuración</a>
+    <div class="nav-spacer"></div>
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">G</div>
+      <div class="user-info"><strong id="sidebarNombre">–</strong><span id="sidebarCorreo">–</span></div>
+    </div>
+    <a class="nav-link" style="margin-top:6px;" id="btn-cerrar" href="#">Cerrar sesión</a>
+  </aside>
+  <main>
+    <header>
+      <div class="header-text"><h2>Control de costos</h2><p>Registro y análisis de gastos operativos de la finca.</p></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="abrirModal('modalCosto')">+ Nuevo gasto</button></div>
+    </header>
 
-<aside>
+    <div class="cards-3" style="margin-bottom:20px;">
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Gasto total del mes</p>
+        <div class="metric" id="costoMes">₡0</div><p class="muted" id="costoMesLabel">–</p>
+      </article>
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Mayor categoría</p>
+        <div class="metric" id="mayorCat" style="font-size:1.3rem;">–</div>
+      </article>
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Total registros</p>
+        <div class="metric" id="totalReg">0</div>
+      </article>
+    </div>
 
-<div class="brand">
-<div class="brand-icon"></div>
-<div>
-<h1>Happy Farmer</h1>
-<p>Sistema Ganadero</p>
+    <article class="card">
+      <div class="panel-title"><h3>Listado de gastos</h3></div>
+      <div class="toolbar">
+        <input type="text" id="buscarCosto" placeholder="🔍 Buscar descripción…" oninput="filtrarTabla()" />
+        <select id="filtroCat" onchange="filtrarTabla()">
+          <option value="">Todas las categorías</option>
+          <option>Alimento</option><option>Medicamentos</option><option>Transporte</option>
+          <option>Mantenimiento</option><option>Veterinario</option><option>Otro</option>
+        </select>
+        <select id="filtroMes" onchange="filtrarTabla()"><option value="">Todos los meses</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método</th><th>Acciones</th></tr></thead>
+          <tbody id="tbCostos"></tbody>
+        </table>
+      </div>
+    </article>
+  </main>
 </div>
+
+<div class="modal-overlay" id="modalCosto">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitulo">Registrar gasto</h3><button class="modal-close" onclick="cerrarModal('modalCosto')">✕</button></div>
+    <input type="hidden" id="costoId" />
+    <div class="form-grid">
+      <div class="form-group"><label>Categoría *</label><select id="cCat"><option>Alimento</option><option>Medicamentos</option><option>Transporte</option><option>Mantenimiento</option><option>Veterinario</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Monto (₡) *</label><input id="cMonto" type="number" min="0" placeholder="0" /></div>
+      <div class="form-group"><label>Fecha *</label><input id="cFecha" type="date" /></div>
+      <div class="form-group"><label>Método de pago</label><select id="cMetodo"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option><option>SINPE</option></select></div>
+      <div class="form-group full"><label>Descripción</label><textarea id="cDesc" rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModal('modalCosto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCosto()">Guardar gasto</button>
+    </div>
+  </div>
 </div>
 
-<p class="menu-title">Navegación</p>
+<div id="toast"></div>
+<script src="script/data.js"></script>
+<script>
+let costosData = [];
 
-<a class="nav-link active" href="dashboard.html">Inicio</a>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initPage();
+  document.getElementById('cFecha').value = new Date().toISOString().slice(0,10);
+  await cargarCostos();
+});
 
-<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
+async function cargarCostos() {
+  const res = await API.get('api/costos.php');
+  if (!res.success) { toast('Error cargando costos', 'err'); return; }
+  costosData = res.data;
+  actualizarSelectMes();
+  filtrarTabla();
+  renderMetricas();
+}
 
-<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
+function editarCosto(c) {
+  document.getElementById('costoId').value = c.id;
+  document.getElementById('modalTitulo').textContent = 'Editar gasto';
+  document.getElementById('cCat').value    = c.cat;
+  document.getElementById('cMonto').value  = c.monto;
+  document.getElementById('cFecha').value  = c.fecha;
+  document.getElementById('cMetodo').value = c.metodo;
+  document.getElementById('cDesc').value   = c.desc || '';
+  abrirModal('modalCosto');
+}
 
-<a class="nav-link" href="generarReporte.html">Reportes</a>
+async function guardarCosto() {
+  const id    = document.getElementById('costoId').value;
+  const monto = parseFloat(document.getElementById('cMonto').value);
+  const fecha = document.getElementById('cFecha').value;
+  if (!fecha || isNaN(monto) || monto <= 0) { toast('Monto y fecha son requeridos.', 'err'); return; }
+  const body = { id: id ? parseInt(id) : undefined, cat: document.getElementById('cCat').value, monto, fecha, metodo: document.getElementById('cMetodo').value, desc: document.getElementById('cDesc').value.trim() };
+  const res = id ? await API.put('api/costos.php', body) : await API.post('api/costos.php', body);
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  cerrarModal('modalCosto');
+  document.getElementById('costoId').value = '';
+  document.getElementById('modalTitulo').textContent = 'Registrar gasto';
+  await cargarCostos();
+}
 
-<a class="nav-link" href="costos.html">Costos</a>
+async function eliminarCosto(id) {
+  if (!confirm('¿Eliminar este gasto?')) return;
+  const res = await API.del(`api/costos.php?id=${id}`);
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  await cargarCostos();
+}
 
-<a class="nav-link" href="configuracion.html">Configuración</a>
+function actualizarSelectMes() {
+  const meses = [...new Set(costosData.map(c => c.fecha.slice(0,7)))].sort().reverse();
+  const sel = document.getElementById('filtroMes');
+  const val = sel.value;
+  sel.innerHTML = '<option value="">Todos los meses</option>' + meses.map(m=>`<option value="${m}">${m}</option>`).join('');
+  if (val) sel.value = val;
+}
 
+function filtrarTabla() {
+  const buscar = document.getElementById('buscarCosto').value.toLowerCase();
+  const cat    = document.getElementById('filtroCat').value;
+  const mes    = document.getElementById('filtroMes').value;
+  const f = costosData.filter(c => (!buscar||(c.desc||'').toLowerCase().includes(buscar)) && (!cat||c.cat===cat) && (!mes||c.fecha.startsWith(mes)));
+  const tbody = document.getElementById('tbCostos');
+  if (!f.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">💰</div><p>Sin gastos</p></div></td></tr>`; return; }
+  tbody.innerHTML = f.map(c=>`<tr><td>${c.fecha}</td><td><span class="badge badge-blue">${c.cat}</span></td><td>${c.desc||'–'}</td><td><strong>${formatColones(c.monto)}</strong></td><td>${c.metodo}</td><td class="actions"><button class="mini-green" onclick='editarCosto(${JSON.stringify(c)})'>Editar</button><button class="mini-red" onclick="eliminarCosto(${c.id})">Eliminar</button></td></tr>`).join('');
+}
 
-<a class="nav-link" href="index.html">Cerrar sesión</a>
-
-
-</aside>
-    <section id="costos" class="screen active">
-        <div class="cards-3">
-            <article class="card">
-                <h3>Gasto total del mes</h3>
-                <div class="metric">₡420 000</div>
-                <p>Resumen de los gastos operativos registrados.</p>
-            </article>
-            <article class="card">
-                <h3>Mayor categoría</h3>
-                <div class="metric">Alimento</div>
-                <p>La categoría con más impacto este mes.</p>
-            </article>
-            <article class="card">
-                <h3>Registros activos</h3>
-                <div class="metric">24</div>
-                <p>Cantidad de gastos ingresados en el periodo actual.</p>
-            </article>
-        </div>
-
-        <article class="card">
-            <div class="panel-title">
-                <div>
-                    <h3>Registrar gasto</h3>
-                    <p class="muted">Control de costos por categoría y fecha.</p>
-                </div>
-            </div>
-            <form class="form-grid">
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select>
-                        <option>Alimento</option>
-                        <option>Medicamentos</option>
-                        <option>Transporte</option>
-                        <option>Mantenimiento</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Monto</label>
-                    <input type="number" placeholder="0.00" />
-                </div>
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" />
-                </div>
-                <div class="form-group">
-                    <label>Método</label>
-                    <select>
-                        <option>Efectivo</option>
-                        <option>Transferencia</option>
-                        <option>Tarjeta</option>
-                    </select>
-                </div>
-                <div class="form-group full">
-                    <label>Descripción</label>
-                    <textarea rows="3" placeholder="Detalle del gasto"></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="btn btn-primary">Guardar gasto</button>
-                </div>
-            </form>
-        </article>
-
-        <article class="card" style="margin-top:20px;">
-            <h3>Listado de gastos</h3>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Categoría</th>
-                            <th>Descripción</th>
-                            <th>Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2026-03-01</td>
-                            <td>Alimento</td>
-                            <td>Compra de concentrado</td>
-                            <td>₡180 000</td>
-                        </tr>
-                        <tr>
-                            <td>2026-03-04</td>
-                            <td>Medicamentos</td>
-                            <td>Antibióticos</td>
-                            <td>₡75 000</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </article>
-    </section>
+function renderMetricas() {
+  const mes   = new Date().toISOString().slice(0,7);
+  const total = costosData.filter(c=>c.fecha.startsWith(mes)).reduce((s,c)=>s+Number(c.monto),0);
+  document.getElementById('costoMes').textContent    = formatColones(total);
+  document.getElementById('costoMesLabel').textContent = mes;
+  document.getElementById('totalReg').textContent    = costosData.length;
+  const porCat = {};
+  costosData.forEach(c => porCat[c.cat] = (porCat[c.cat]||0) + Number(c.monto));
+  const mayor = Object.entries(porCat).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('mayorCat').textContent = mayor ? mayor[0] : '–';
+}
+</script>
 </body>
 </html>

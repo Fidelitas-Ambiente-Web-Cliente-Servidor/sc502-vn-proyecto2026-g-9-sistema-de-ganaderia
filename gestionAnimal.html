@@ -1,159 +1,209 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<title>Happy Farmer - Salud Animal</title>
-
-<link rel="stylesheet" href="styles/styles.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer – Gestión de animales</title>
+  <link rel="stylesheet" href="styles/styles.css" />
 </head>
-
 <body>
-
 <div class="app">
+  <aside>
+    <div class="brand"><div class="brand-icon">🐄</div><div><h1>Happy Farmer</h1><p>Gestión ganadera</p></div></div>
+    <p class="menu-title">Menú principal</p>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="gestionAnimal.html">Gestión de animales</a>
+    <a class="nav-link" href="saludAnimal.html">Salud animal</a>
+    <a class="nav-link" href="costos.html">Costos</a>
+    <a class="nav-link" href="generarReporte.html">Reportes</a>
+    <p class="menu-title">Cuenta</p>
+    <a class="nav-link" href="configuracion.html">Configuración</a>
+    <div class="nav-spacer"></div>
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">G</div>
+      <div class="user-info"><strong id="sidebarNombre">–</strong><span id="sidebarCorreo">–</span></div>
+    </div>
+    <a class="nav-link" style="margin-top:6px;" id="btn-cerrar" href="#">Cerrar sesión</a>
+  </aside>
 
-<aside>
+  <main>
+    <header>
+      <div class="header-text"><h2>Gestión de animales</h2><p>Registre, busque y administre el inventario de la finca.</p></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="abrirModalAnimal()">+ Agregar animal</button></div>
+    </header>
 
-<div class="brand">
-<div class="brand-icon"></div>
-<div>
-<h1>Happy Farmer</h1>
-<p>Sistema Ganadero</p>
+    <article class="card">
+      <div class="panel-title">
+        <h3>Inventario de animales</h3>
+        <span id="contadorAnimales" class="badge badge-green">0 animales</span>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="buscarAnimal" placeholder="🔍 Buscar por ID o nombre…" oninput="filtrarTabla()" />
+        <select id="filtroRaza" onchange="filtrarTabla()">
+          <option value="">Todas las razas</option>
+          <option>Brahman</option><option>Holstein</option><option>Jersey</option>
+          <option>Pardo Suizo</option><option>Angus</option><option>Otra</option>
+        </select>
+        <select id="filtroEstado" onchange="filtrarTabla()">
+          <option value="">Todos los estados</option>
+          <option>Activo</option><option>En tratamiento</option><option>Vendido</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Raza</th><th>Nacimiento</th><th>Sexo</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tbAnimales"></tbody>
+        </table>
+      </div>
+    </article>
+  </main>
 </div>
+
+<!-- Modal agregar/editar -->
+<div class="modal-overlay" id="modalAnimal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitulo">Agregar animal</h3>
+      <button class="modal-close" onclick="cerrarModal('modalAnimal')">✕</button>
+    </div>
+    <input type="hidden" id="animalId" />
+    <div class="form-grid">
+      <div class="form-group"><label>Identificación *</label><input id="aId" type="text" placeholder="Ej: A-004" /></div>
+      <div class="form-group"><label>Nombre</label><input id="aNombre" type="text" /></div>
+      <div class="form-group">
+        <label>Raza *</label>
+        <select id="aRaza"><option value="">Seleccione</option><option>Brahman</option><option>Holstein</option><option>Jersey</option><option>Pardo Suizo</option><option>Angus</option><option>Otra</option></select>
+      </div>
+      <div class="form-group"><label>Sexo</label><select id="aSexo"><option>Hembra</option><option>Macho</option></select></div>
+      <div class="form-group"><label>Fecha de nacimiento</label><input id="aFecha" type="date" /></div>
+      <div class="form-group"><label>Estado</label><select id="aEstado"><option>Activo</option><option>En tratamiento</option><option>Vendido</option></select></div>
+      <div class="form-group full"><label>Observaciones</label><textarea id="aObs" rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModal('modalAnimal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarAnimal()">Guardar animal</button>
+    </div>
+  </div>
 </div>
 
-<p class="menu-title">Navegación</p>
+<!-- Modal detalle -->
+<div class="modal-overlay" id="modalDetalle">
+  <div class="modal">
+    <div class="modal-header"><h3>Detalle del animal</h3><button class="modal-close" onclick="cerrarModal('modalDetalle')">✕</button></div>
+    <div id="detalleContenido"></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="cerrarModal('modalDetalle')">Cerrar</button></div>
+  </div>
+</div>
 
-<a class="nav-link active" href="dashboard.html">Inicio</a>
+<div id="toast"></div>
+<script src="script/data.js"></script>
+<script>
+let animalesData = [];
 
-<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initPage();
+  await cargarAnimales();
+});
 
-<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
+async function cargarAnimales() {
+  const res = await API.get('api/animales.php');
+  if (!res.success) { toast('Error cargando animales', 'err'); return; }
+  animalesData = res.data;
+  renderTabla(animalesData);
+}
 
-<a class="nav-link" href="generarReporte.html">Reportes</a>
+function abrirModalAnimal(animal = null) {
+  document.getElementById('animalId').value    = animal ? animal.id : '';
+  document.getElementById('modalTitulo').textContent = animal ? 'Editar animal' : 'Agregar animal';
+  document.getElementById('aId').value         = animal ? animal.identificacion : '';
+  document.getElementById('aNombre').value     = animal ? (animal.nombre || '') : '';
+  document.getElementById('aRaza').value       = animal ? animal.raza : '';
+  document.getElementById('aSexo').value       = animal ? animal.sexo : 'Hembra';
+  document.getElementById('aFecha').value      = animal ? (animal.fecha_nacimiento || '') : '';
+  document.getElementById('aEstado').value     = animal ? animal.estado : 'Activo';
+  document.getElementById('aObs').value        = animal ? (animal.observaciones || '') : '';
+  abrirModal('modalAnimal');
+}
 
-<a class="nav-link" href="costos.html">Costos</a>
+async function guardarAnimal() {
+  const id   = document.getElementById('animalId').value;
+  const body = {
+    id:               id ? parseInt(id) : undefined,
+    identificacion:   document.getElementById('aId').value.trim(),
+    nombre:           document.getElementById('aNombre').value.trim(),
+    raza:             document.getElementById('aRaza').value,
+    sexo:             document.getElementById('aSexo').value,
+    fecha_nacimiento: document.getElementById('aFecha').value || null,
+    estado:           document.getElementById('aEstado').value,
+    observaciones:    document.getElementById('aObs').value.trim(),
+  };
 
-<a class="nav-link" href="configuracion.html">Configuración</a>
+  if (!body.identificacion || !body.raza) { toast('Identificación y raza son requeridos.', 'err'); return; }
 
+  const res = id
+    ? await API.put('api/animales.php', body)
+    : await API.post('api/animales.php', body);
 
-<a class="nav-link" href="index.html">Cerrar sesión</a>
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  cerrarModal('modalAnimal');
+  await cargarAnimales();
+}
 
+async function eliminarAnimal(id) {
+  if (!confirm('¿Eliminar este animal?')) return;
+  const res = await API.del(`api/animales.php?id=${id}`);
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  await cargarAnimales();
+}
 
-</aside>
+function verDetalle(a) {
+  document.getElementById('detalleContenido').innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-item"><div class="dl">ID</div><div class="dv">${a.identificacion}</div></div>
+      <div class="detail-item"><div class="dl">Nombre</div><div class="dv">${a.nombre || '–'}</div></div>
+      <div class="detail-item"><div class="dl">Raza</div><div class="dv">${a.raza}</div></div>
+      <div class="detail-item"><div class="dl">Sexo</div><div class="dv">${a.sexo}</div></div>
+      <div class="detail-item"><div class="dl">Nacimiento</div><div class="dv">${a.fecha_nacimiento || '–'}</div></div>
+      <div class="detail-item"><div class="dl">Estado</div><div class="dv">${badgeEstado(a.estado)}</div></div>
+      <div class="detail-item" style="grid-column:1/-1;"><div class="dl">Observaciones</div><div class="dv">${a.observaciones || '–'}</div></div>
+    </div>`;
+  abrirModal('modalDetalle');
+}
 
+function filtrarTabla() {
+  const buscar = document.getElementById('buscarAnimal').value.toLowerCase();
+  const raza   = document.getElementById('filtroRaza').value;
+  const estado = document.getElementById('filtroEstado').value;
+  const f = animalesData.filter(a =>
+    (!buscar  || a.identificacion.toLowerCase().includes(buscar) || (a.nombre||'').toLowerCase().includes(buscar))
+    && (!raza   || a.raza === raza)
+    && (!estado || a.estado === estado)
+  );
+  renderTabla(f);
+}
 
-<section id="animales" class="screen active">
-        <article class="card">
-            <div class="panel-title">
-                <div>
-                    <h3>Gestión de animales</h3>
-                    <p class="muted">Listar, buscar, filtrar, agregar y editar animales.</p>
-                </div>
-            </div>
-
-            <div class="toolbar">
-                <input type="text" placeholder="Buscar por identificación o nombre" />
-                <select>
-                    <option>Filtrar por raza</option>
-                    <option>Brahman</option>
-                    <option>Holstein</option>
-                    <option>Jersey</option>
-                </select>
-                <select>
-                    <option>Filtrar por estado</option>
-                    <option>Activo</option>
-                    <option>En tratamiento</option>
-                    <option>Vendido</option>
-                </select>
-            </div>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Raza</th>
-                            <th>Fecha de nacimiento</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>A-001</td>
-                            <td>Luna</td>
-                            <td>Jersey</td>
-                            <td>2022-05-11</td>
-                            <td>Activo</td>
-                            <td class="actions">
-                                <button class="mini-blue">Ver detalle</button>
-                                <button class="mini-green">Editar</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>A-002</td>
-                            <td>Estrella</td>
-                            <td>Holstein</td>
-                            <td>2021-09-23</td>
-                            <td>Activo</td>
-                            <td class="actions">
-                                <button class="mini-blue">Ver detalle</button>
-                                <button class="mini-green">Editar</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>A-003</td>
-                            <td>Toro 18</td>
-                            <td>Brahman</td>
-                            <td>2020-12-14</td>
-                            <td>En tratamiento</td>
-                            <td class="actions">
-                                <button class="mini-blue">Ver detalle</button>
-                                <button class="mini-green">Editar</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </article>
-
-        <article class="card" style="margin-top: 20px;">
-            <h3>Agregar animal</h3>
-            <form class="form-grid">
-                <div class="form-group">
-                    <label>Identificación</label>
-                    <input type="text" placeholder="Ej: A-004" />
-                </div>
-                <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" placeholder="Nombre del animal" />
-                </div>
-                <div class="form-group">
-                    <label>Raza</label>
-                    <select>
-                        <option>Seleccione una raza</option>
-                        <option>Brahman</option>
-                        <option>Holstein</option>
-                        <option>Jersey</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Fecha de nacimiento</label>
-                    <input type="date" />
-                </div>
-                <div class="form-group full">
-                    <label>Observaciones</label>
-                    <textarea rows="4" placeholder="Información importante del animal"></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="btn btn-primary">Guardar animal</button>
-                </div>
-            </form>
-        </article>
-    </section>
-
+function renderTabla(data) {
+  document.getElementById('contadorAnimales').textContent = animalesData.length + ' animales';
+  const tbody = document.getElementById('tbAnimales');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">🐄</div><p>Sin resultados</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(a => `
+    <tr>
+      <td><strong>${a.identificacion}</strong></td>
+      <td>${a.nombre || '–'}</td><td>${a.raza}</td>
+      <td>${a.fecha_nacimiento || '–'}</td><td>${a.sexo}</td>
+      <td>${badgeEstado(a.estado)}</td>
+      <td class="actions">
+        <button class="mini-blue" onclick="verDetalle(${JSON.stringify(a).replace(/"/g,'&quot;')})">Ver</button>
+        <button class="mini-green" onclick='abrirModalAnimal(${JSON.stringify(a)})'>Editar</button>
+        <button class="mini-red" onclick="eliminarAnimal(${a.id})">Eliminar</button>
+      </td>
+    </tr>`).join('');
+}
+</script>
 </body>
 </html>

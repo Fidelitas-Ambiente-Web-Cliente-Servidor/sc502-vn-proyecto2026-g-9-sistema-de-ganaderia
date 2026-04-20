@@ -1,151 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<title>Happy Farmer - Reportes</title>
-
-<link rel="stylesheet" href="styles/styles.css">
-
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer – Reportes</title>
+  <link rel="stylesheet" href="styles/styles.css" />
+  <style>@media print { aside,header,.no-print{display:none!important} main{padding:0} }</style>
 </head>
-
 <body>
-
 <div class="app">
-
-
-<aside>
-
-<div class="brand">
-<div class="brand-icon"></div>
-<div>
-<h1>Happy Farmer</h1>
-<p>Sistema Ganadero</p>
+  <aside>
+    <div class="brand"><div class="brand-icon">🐄</div><div><h1>Happy Farmer</h1><p>Gestión ganadera</p></div></div>
+    <p class="menu-title">Menú principal</p>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="gestionAnimal.html">Gestión de animales</a>
+    <a class="nav-link" href="saludAnimal.html">Salud animal</a>
+    <a class="nav-link" href="costos.html">Costos</a>
+    <a class="nav-link" href="generarReporte.html">Reportes</a>
+    <p class="menu-title">Cuenta</p>
+    <a class="nav-link" href="configuracion.html">Configuración</a>
+    <div class="nav-spacer"></div>
+    <div class="user-pill"><div class="user-avatar" id="sidebarAvatar">G</div><div class="user-info"><strong id="sidebarNombre">–</strong><span id="sidebarCorreo">–</span></div></div>
+    <a class="nav-link" style="margin-top:6px;" id="btn-cerrar" href="#">Cerrar sesión</a>
+  </aside>
+  <main>
+    <header class="no-print"><div class="header-text"><h2>Generación de Reportes</h2><p>Consulte y exporte información del sistema ganadero.</p></div></header>
+    <div class="cards-3 no-print" style="margin-bottom:20px;">
+      <article class="card"><div class="panel-title"><h3>📋 Inventario</h3></div><p class="muted">Animales registrados, razas y estados.</p><button class="btn btn-secondary" style="margin-top:14px;" onclick="generarReporte('inventario')">Generar</button></article>
+      <article class="card"><div class="panel-title"><h3>💉 Salud animal</h3></div><p class="muted">Vacunas, tratamientos y controles.</p><button class="btn btn-secondary" style="margin-top:14px;" onclick="generarReporte('salud')">Generar</button></article>
+      <article class="card"><div class="panel-title"><h3>💰 Costos</h3></div><p class="muted">Gastos por categoría y período.</p><button class="btn btn-secondary" style="margin-top:14px;" onclick="generarReporte('costos')">Generar</button></article>
+    </div>
+    <article class="card no-print" style="margin-bottom:20px;">
+      <div class="panel-title"><h3>Filtrar por fechas (opcional)</h3></div>
+      <div class="form-grid" style="grid-template-columns:repeat(3,1fr);align-items:flex-end;">
+        <div class="form-group"><label>Fecha inicio</label><input type="date" id="fechaInicio" /></div>
+        <div class="form-group"><label>Fecha fin</label><input type="date" id="fechaFin" /></div>
+        <div class="form-group"><button class="btn btn-ghost" onclick="document.getElementById('fechaInicio').value='';document.getElementById('fechaFin').value='';">Limpiar</button></div>
+      </div>
+    </article>
+    <article class="card" id="reporteCard">
+      <div class="panel-title no-print"><h3>Vista previa del reporte</h3><button class="btn btn-primary" id="btnImprimir" style="display:none;" onclick="window.print()">🖨️ Imprimir / PDF</button></div>
+      <div id="reporteContenido"><div class="empty-state"><div class="icon">📄</div><p>Seleccione un tipo de reporte.</p></div></div>
+    </article>
+  </main>
 </div>
-</div>
+<div id="toast"></div>
+<script src="script/data.js"></script>
+<script>
+let sesionData = null;
+document.addEventListener('DOMContentLoaded', async () => { sesionData = await initPage(); });
 
-<p class="menu-title">Navegación</p>
+function enRango(fecha) {
+  const ini = document.getElementById('fechaInicio').value;
+  const fin = document.getElementById('fechaFin').value;
+  if (!ini && !fin) return true;
+  if (ini && fecha < ini) return false;
+  if (fin && fecha > fin) return false;
+  return true;
+}
 
-<a class="nav-link active" href="dashboard.html">Inicio</a>
+async function generarReporte(tipo) {
+  const finca = sesionData?.finca || 'Mi finca';
+  const fecha = new Date().toLocaleDateString('es-CR',{day:'2-digit',month:'long',year:'numeric'});
+  let html = '';
 
-<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
+  if (tipo === 'inventario') {
+    const res = await API.get('api/animales.php');
+    const animales = (res.data || []).filter(a => enRango(a.fecha_nacimiento || ''));
+    html = `<h3 style="margin-bottom:4px;">Reporte de Inventario</h3><p class="muted" style="margin-bottom:16px;">Finca: <strong>${finca}</strong> | Generado: ${fecha}</p>
+    <div class="cards-3" style="margin-bottom:16px;">
+      <div class="card"><p class="muted" style="font-size:.78rem">Total</p><div class="metric">${animales.length}</div></div>
+      <div class="card"><p class="muted" style="font-size:.78rem">Activos</p><div class="metric">${animales.filter(a=>a.estado==='Activo').length}</div></div>
+      <div class="card"><p class="muted" style="font-size:.78rem">En tratamiento</p><div class="metric">${animales.filter(a=>a.estado==='En tratamiento').length}</div></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Raza</th><th>Sexo</th><th>Nacimiento</th><th>Estado</th></tr></thead>
+    <tbody>${animales.map(a=>`<tr><td>${a.identificacion}</td><td>${a.nombre||'–'}</td><td>${a.raza}</td><td>${a.sexo}</td><td>${a.fecha_nacimiento||'–'}</td><td>${badgeEstado(a.estado)}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--gris-400)">Sin registros</td></tr>'}</tbody></table></div>`;
 
-<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
+  } else if (tipo === 'salud') {
+    const res = await API.get('api/salud.php');
+    const salud = (res.data || []).filter(r => enRango(r.fecha));
+    html = `<h3 style="margin-bottom:4px;">Reporte de Salud Animal</h3><p class="muted" style="margin-bottom:16px;">Finca: <strong>${finca}</strong> | Generado: ${fecha}</p>
+    <div class="cards-2" style="margin-bottom:16px;">
+      <div class="card"><p class="muted" style="font-size:.78rem">Total registros</p><div class="metric">${salud.length}</div></div>
+      <div class="card"><p class="muted" style="font-size:.78rem">Vacunas</p><div class="metric">${salud.filter(r=>r.tipo==='Vacuna').length}</div></div>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Animal</th><th>Tipo</th><th>Fecha</th><th>Veterinario</th><th>Medicamento</th><th>Próx. control</th></tr></thead>
+    <tbody>${salud.map(r=>`<tr><td>${r.animal}</td><td>${r.tipo}</td><td>${r.fecha}</td><td>${r.vet||'–'}</td><td>${r.med||'–'}</td><td>${r.prox||'–'}</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--gris-400)">Sin registros</td></tr>'}</tbody></table></div>`;
 
-<a class="nav-link" href="generarReporte.html">Reportes</a>
+  } else if (tipo === 'costos') {
+    const res = await API.get('api/costos.php');
+    const costos = (res.data || []).filter(c => enRango(c.fecha));
+    const total  = costos.reduce((s,c)=>s+Number(c.monto),0);
+    const porCat = {};
+    costos.forEach(c => porCat[c.cat]=(porCat[c.cat]||0)+Number(c.monto));
+    html = `<h3 style="margin-bottom:4px;">Reporte de Costos</h3><p class="muted" style="margin-bottom:16px;">Finca: <strong>${finca}</strong> | Generado: ${fecha}</p>
+    <div class="card" style="margin-bottom:16px;"><p class="muted" style="font-size:.78rem">Gasto total del período</p><div class="metric">${formatColones(total)}</div></div>
+    <div style="margin-bottom:16px;">${Object.entries(porCat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--gris-200);"><span>${k}</span><strong>${formatColones(v)}</strong></div>`).join('')}</div>
+    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Monto</th><th>Método</th></tr></thead>
+    <tbody>${costos.map(c=>`<tr><td>${c.fecha}</td><td>${c.cat}</td><td>${c.desc||'–'}</td><td>${formatColones(c.monto)}</td><td>${c.metodo}</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--gris-400)">Sin registros</td></tr>'}</tbody></table></div>`;
+  }
 
-<a class="nav-link" href="costos.html">Costos</a>
-
-<a class="nav-link" href="configuracion.html">Configuración</a>
-
-
-<a class="nav-link" href="index.html">Cerrar sesión</a>
-
-</aside>
-
-<main>
-
-<header>
-
-<div class="header-text">
-<h2>Generación de Reportes</h2>
-<p>Consulta información del sistema ganadero</p>
-</div>
-
-</header>
-
-<section class="card">
-
-<div class="panel-title">
-<h3>Generar nuevo reporte</h3>
-</div>
-
-<form class="form-grid">
-
-<div class="form-group">
-<label>Tipo de reporte</label>
-<select>
-<option>Reporte de animales</option>
-<option>Reporte de salud animal</option>
-<option>Reporte de costos</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Fecha inicio</label>
-<input type="date">
-</div>
-
-<div class="form-group">
-<label>Fecha fin</label>
-<input type="date">
-</div>
-
-<div class="form-group full">
-<label>Observaciones</label>
-<textarea rows="3"></textarea>
-</div>
-
-<div class="form-group full">
-<button class="btn btn-primary">Generar reporte</button>
-</div>
-
-</form>
-
-</section>
-
-<section class="card">
-
-<div class="panel-title">
-<h3>Reportes generados</h3>
-</div>
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Reporte</th>
-<th>Fecha</th>
-<th>Usuario</th>
-<th>Acciones</th>
-</tr>
-</thead>
-
-<tbody>
-
-<tr>
-<td>Inventario de animales</td>
-<td>10/03/2026</td>
-<td>Administrador</td>
-<td class="actions">
-<button class="mini-blue">Ver</button>
-<button class="mini-green">Descargar</button>
-</td>
-</tr>
-
-<tr>
-<td>Salud animal</td>
-<td>08/03/2026</td>
-<td>Administrador</td>
-<td class="actions">
-<button class="mini-blue">Ver</button>
-<button class="mini-green">Descargar</button>
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</section>
-
-</main>
-
-</div>
-
+  document.getElementById('reporteContenido').innerHTML = html;
+  document.getElementById('btnImprimir').style.display = 'inline-flex';
+  toast('Reporte generado correctamente.');
+  document.getElementById('reporteCard').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
 </body>
 </html>

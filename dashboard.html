@@ -1,85 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<title>Happy Farmer</title>
-
-<link rel="stylesheet" href="styles/styles.css">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer – Panel principal</title>
+  <link rel="stylesheet" href="styles/styles.css" />
 </head>
-
 <body>
 
 <div class="app">
 
-<aside>
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside>
+    <div class="brand">
+      <div class="brand-icon">🐄</div>
+      <div>
+        <h1>Happy Farmer</h1>
+        <p>Gestión ganadera</p>
+      </div>
+    </div>
 
-<div class="brand">
-<div class="brand-icon"></div>
-<div>
-<h1>Happy Farmer</h1>
-<p>Sistema Ganadero</p>
+    <p class="menu-title">Menú principal</p>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="gestionAnimal.html">Gestión de animales</a>
+    <a class="nav-link" href="saludAnimal.html">Salud animal</a>
+    <a class="nav-link" href="costos.html">Costos</a>
+    <a class="nav-link" href="generarReporte.html">Reportes</a>
+    <p class="menu-title">Cuenta</p>
+    <a class="nav-link" href="configuracion.html">Configuración</a>
+
+    <div class="nav-spacer"></div>
+
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">G</div>
+      <div class="user-info">
+        <strong id="sidebarNombre">–</strong>
+        <span id="sidebarCorreo">–</span>
+      </div>
+    </div>
+    <a class="nav-link" style="margin-top:6px;" id="btn-cerrar" href="#">Cerrar sesión</a>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main>
+
+    <header>
+      <div class="header-text">
+        <h2>Panel principal</h2>
+        <p>Resumen de la finca con métricas y alertas en tiempo real.</p>
+      </div>
+      <div class="header-actions">
+        <a href="gestionAnimal.html" class="btn btn-secondary">+ Animal</a>
+        <a href="saludAnimal.html"   class="btn btn-secondary">+ Vacuna</a>
+        <a href="costos.html"        class="btn btn-primary">+ Gasto</a>
+      </div>
+    </header>
+
+    <!-- MÉTRICAS -->
+    <div class="cards-4">
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Total animales</p>
+        <div class="metric" id="metAnimales">0</div>
+        <p class="muted">Inventario registrado</p>
+        <span class="badge green">Actualizado</span>
+      </article>
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Controles pendientes</p>
+        <div class="metric" id="metVacunas">0</div>
+        <p class="muted">Próximos 7 días</p>
+        <span class="badge yellow">Revisar</span>
+      </article>
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Gastos del mes</p>
+        <div class="metric" id="metGastos">₡0</div>
+        <p class="muted">Total operativo</p>
+        <span class="badge red">Este mes</span>
+      </article>
+      <article class="card">
+        <p class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;">Registros de salud</p>
+        <div class="metric" id="metSalud">0</div>
+        <p class="muted">Historial sanitario</p>
+        <span class="badge green">Actualizado</span>
+      </article>
+    </div>
+
+    <div class="cards-2">
+
+      <!-- ALERTAS -->
+      <article class="card">
+        <div class="panel-title"><h3>Alertas recientes</h3></div>
+        <div class="alert-list" id="alertasLista">
+          <div class="empty-state"><div class="icon">🔔</div><p>No hay alertas activas</p></div>
+        </div>
+      </article>
+
+      <!-- ACCESOS RÁPIDOS + ÚLTIMOS ANIMALES -->
+      <article class="card">
+        <div class="panel-title"><h3>Accesos rápidos</h3></div>
+        <div class="cards-2" style="margin-bottom:20px;">
+          <a href="gestionAnimal.html" class="btn btn-secondary" style="justify-content:center;">🐮 Ver animales</a>
+          <a href="saludAnimal.html"   class="btn btn-secondary" style="justify-content:center;">💉 Salud animal</a>
+          <a href="costos.html"        class="btn btn-secondary" style="justify-content:center;">💰 Ver costos</a>
+          <a href="generarReporte.html" class="btn btn-secondary" style="justify-content:center;">📄 Reportes</a>
+        </div>
+        <div class="panel-title"><h3>Últimos animales</h3></div>
+        <div id="ultimosAnimales">
+          <div class="empty-state"><div class="icon">🐄</div><p>Sin animales registrados</p></div>
+        </div>
+      </article>
+
+    </div>
+
+  </main>
 </div>
-</div>
 
-<p class="menu-title">Navegación</p>
-
-<a class="nav-link active" href="dashboard.html">Inicio</a>
-
-<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
-
-<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
-
-<a class="nav-link" href="generarReporte.html">Reportes</a>
-
-<a class="nav-link" href="costos.html">Costos</a>
-
-<a class="nav-link" href="configuracion.html">Configuración</a>
-
-
-<a class="nav-link" href="index.html">Cerrar sesión</a>
-
-</aside>
-
-
-<main>
-
-<header>
-
-<div class="header-text">
-<h2>Panel principal</h2>
-<p>Resumen del sistema ganadero</p>
-</div>
-
-</header>
-
-
-<section class="cards-3">
-
-<div class="card">
-<h3>Total animales</h3>
-<p class="metric">128</p>
-<p class="muted">Registrados en la finca</p>
-</div>
-
-<div class="card">
-<h3>Vacunas aplicadas</h3>
-<p class="metric">45</p>
-<p class="muted">Último mes</p>
-</div>
-
-<div class="card">
-<h3>Alertas sanitarias</h3>
-<p class="metric">3</p>
-<p class="muted">Revisión pendiente</p>
-</div>
-
-</section>
-
-</main>
-
-</div>
-
+<div id="toast"></div>
+<script src="script/data.js"></script>
+<script src="script/dashboard.js"></script>
 </body>
 </html>

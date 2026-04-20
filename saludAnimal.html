@@ -1,168 +1,202 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<title>Happy Farmer - Salud Animal</title>
-
-<link rel="stylesheet" href="styles/styles.css">
-
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Farmer – Salud animal</title>
+  <link rel="stylesheet" href="styles/styles.css" />
 </head>
-
 <body>
-
 <div class="app">
+  <aside>
+    <div class="brand"><div class="brand-icon">🐄</div><div><h1>Happy Farmer</h1><p>Gestión ganadera</p></div></div>
+    <p class="menu-title">Menú principal</p>
+    <a class="nav-link" href="dashboard.html">Inicio</a>
+    <a class="nav-link" href="gestionAnimal.html">Gestión de animales</a>
+    <a class="nav-link" href="saludAnimal.html">Salud animal</a>
+    <a class="nav-link" href="costos.html">Costos</a>
+    <a class="nav-link" href="generarReporte.html">Reportes</a>
+    <p class="menu-title">Cuenta</p>
+    <a class="nav-link" href="configuracion.html">Configuración</a>
+    <div class="nav-spacer"></div>
+    <div class="user-pill">
+      <div class="user-avatar" id="sidebarAvatar">G</div>
+      <div class="user-info"><strong id="sidebarNombre">–</strong><span id="sidebarCorreo">–</span></div>
+    </div>
+    <a class="nav-link" style="margin-top:6px;" id="btn-cerrar" href="#">Cerrar sesión</a>
+  </aside>
+  <main>
+    <header>
+      <div class="header-text"><h2>Salud animal</h2><p>Control sanitario, vacunas y tratamientos del ganado.</p></div>
+      <div class="header-actions"><button class="btn btn-primary" onclick="abrirModal('modalSalud')">+ Registrar</button></div>
+    </header>
 
-<aside>
+    <div class="cards-2" style="margin-bottom:20px;">
+      <article class="card">
+        <div class="panel-title"><h3>Controles pendientes / vencidos</h3></div>
+        <div class="alert-list" id="alertasSalud"><div class="empty-state"><div class="icon">✅</div><p>Sin pendientes</p></div></div>
+      </article>
+      <article class="card">
+        <div class="panel-title"><h3>Resumen sanitario</h3></div>
+        <div class="detail-grid">
+          <div class="detail-item"><div class="dl">Total registros</div><div class="dv" id="totalReg">0</div></div>
+          <div class="detail-item"><div class="dl">Vacunas</div><div class="dv" id="totalVacunas">0</div></div>
+          <div class="detail-item"><div class="dl">Tratamientos</div><div class="dv" id="totalTrat">0</div></div>
+          <div class="detail-item"><div class="dl">Pendientes (7d)</div><div class="dv" id="totalPend">0</div></div>
+        </div>
+      </article>
+    </div>
 
-<div class="brand">
-<div class="brand-icon"></div>
-<div>
-<h1>Happy Farmer</h1>
-<p>Sistema Ganadero</p>
-</div>
-</div>
-
-<p class="menu-title">Navegación</p>
-
-<a class="nav-link active" href="dashboard.html">Inicio</a>
-
-<a class="nav-link active" href="gestionAnimal.html">Gestión de animales</a>
-
-<a class="nav-link" href="saludAnimal.html">Salud Animal</a>
-
-<a class="nav-link" href="generarReporte.html">Reportes</a>
-
-<a class="nav-link" href="costos.html">Costos</a>
-
-<a class="nav-link" href="configuracion.html">Configuración</a>
-
-
-<a class="nav-link" href="index.html">Cerrar sesión</a>
-
-
-</aside>
-
-
-<main>
-
-<header>
-
-<div class="header-text">
-<h2>Salud Animal</h2>
-<p>Registro sanitario del ganado</p>
-</div>
-
-</header>
-
-
-<section class="card">
-
-<div class="panel-title">
-<h3>Registrar control sanitario</h3>
-</div>
-
-<form class="form-grid">
-
-<div class="form-group">
-<label>Animal</label>
-<select>
-<option>Luna</option>
-<option>Estrella</option>
-<option>Manchada</option>
-</select>
+    <article class="card">
+      <div class="panel-title"><h3>Historial sanitario</h3></div>
+      <div class="toolbar">
+        <input type="text" id="buscarSalud" placeholder="🔍 Buscar animal…" oninput="filtrarTabla()" />
+        <select id="filtroTipo" onchange="filtrarTabla()">
+          <option value="">Todos los tipos</option>
+          <option>Vacuna</option><option>Tratamiento</option><option>Desparasitación</option><option>Revisión</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Animal</th><th>Tipo</th><th>Fecha</th><th>Veterinario</th><th>Medicamento</th><th>Próx. control</th><th>Acciones</th></tr></thead>
+          <tbody id="tbSalud"></tbody>
+        </table>
+      </div>
+    </article>
+  </main>
 </div>
 
-<div class="form-group">
-<label>Tipo de control</label>
-<select>
-<option>Vacunación</option>
-<option>Desparasitación</option>
-<option>Chequeo veterinario</option>
-<option>Tratamiento</option>
-</select>
+<div class="modal-overlay" id="modalSalud">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitulo">Registrar evento sanitario</h3><button class="modal-close" onclick="cerrarModal('modalSalud')">✕</button></div>
+    <input type="hidden" id="saludId" />
+    <div class="form-grid">
+      <div class="form-group"><label>Animal *</label><input id="sAnimal" type="text" placeholder="Nombre o ID del animal" /></div>
+      <div class="form-group"><label>Tipo *</label><select id="sTipo"><option>Vacuna</option><option>Tratamiento</option><option>Desparasitación</option><option>Revisión</option></select></div>
+      <div class="form-group"><label>Fecha *</label><input id="sFecha" type="date" /></div>
+      <div class="form-group"><label>Próximo control</label><input id="sProx" type="date" /></div>
+      <div class="form-group"><label>Veterinario</label><input id="sVet" type="text" /></div>
+      <div class="form-group"><label>Medicamento / dosis</label><input id="sMed" type="text" /></div>
+      <div class="form-group full"><label>Observaciones</label><textarea id="sDetalle" rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModal('modalSalud')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarSalud()">Guardar registro</button>
+    </div>
+  </div>
 </div>
 
-<div class="form-group">
-<label>Fecha</label>
-<input type="date">
-</div>
+<div id="toast"></div>
+<script src="script/data.js"></script>
+<script>
+let saludData = [];
 
-<div class="form-group">
-<label>Veterinario</label>
-<input type="text" placeholder="Nombre del veterinario">
-</div>
+document.addEventListener('DOMContentLoaded', async () => {
+  await initPage();
+  await cargarSalud();
+});
 
-<div class="form-group full">
-<label>Observaciones</label>
-<textarea rows="3"></textarea>
-</div>
+async function cargarSalud() {
+  const res = await API.get('api/salud.php');
+  if (!res.success) { toast('Error cargando registros', 'err'); return; }
+  saludData = res.data;
+  renderTabla(saludData);
+  renderAlertas();
+  renderResumen();
+}
 
-<div class="form-group full">
-<button class="btn btn-primary">Guardar registro</button>
-</div>
+function editarSalud(r) {
+  document.getElementById('saludId').value = r.id;
+  document.getElementById('modalTitulo').textContent = 'Editar registro sanitario';
+  document.getElementById('sAnimal').value  = r.animal;
+  document.getElementById('sTipo').value    = r.tipo;
+  document.getElementById('sFecha').value   = r.fecha;
+  document.getElementById('sProx').value    = r.prox || '';
+  document.getElementById('sVet').value     = r.vet || '';
+  document.getElementById('sMed').value     = r.med || '';
+  document.getElementById('sDetalle').value = r.detalle || '';
+  abrirModal('modalSalud');
+}
 
-</form>
+async function guardarSalud() {
+  const id = document.getElementById('saludId').value;
+  const body = {
+    id:      id ? parseInt(id) : undefined,
+    animal:  document.getElementById('sAnimal').value.trim(),
+    tipo:    document.getElementById('sTipo').value,
+    fecha:   document.getElementById('sFecha').value,
+    prox:    document.getElementById('sProx').value || null,
+    vet:     document.getElementById('sVet').value.trim(),
+    med:     document.getElementById('sMed').value.trim(),
+    detalle: document.getElementById('sDetalle').value.trim(),
+  };
+  if (!body.animal || !body.fecha) { toast('Animal y fecha son requeridos.', 'err'); return; }
+  const res = id ? await API.put('api/salud.php', body) : await API.post('api/salud.php', body);
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  cerrarModal('modalSalud');
+  document.getElementById('saludId').value = '';
+  document.getElementById('modalTitulo').textContent = 'Registrar evento sanitario';
+  await cargarSalud();
+}
 
-</section>
+async function eliminarSalud(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  const res = await API.del(`api/salud.php?id=${id}`);
+  if (!res.success) { toast(res.message, 'err'); return; }
+  toast(res.message);
+  await cargarSalud();
+}
 
+function filtrarTabla() {
+  const buscar = document.getElementById('buscarSalud').value.toLowerCase();
+  const tipo   = document.getElementById('filtroTipo').value;
+  renderTabla(saludData.filter(r =>
+    (!buscar || r.animal.toLowerCase().includes(buscar)) && (!tipo || r.tipo === tipo)
+  ));
+}
 
+function renderTabla(data) {
+  const hoy   = new Date().toISOString().slice(0,10);
+  const tbody = document.getElementById('tbSalud');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">💉</div><p>Sin registros</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td>${r.animal}</td>
+      <td><span class="badge badge-blue">${r.tipo}</span></td>
+      <td>${r.fecha}</td>
+      <td>${r.vet || '–'}</td>
+      <td>${r.med || '–'}</td>
+      <td>${r.prox ? `<span class="badge ${r.prox < hoy ? 'badge-red' : 'badge-green'}">${r.prox}${r.prox < hoy ? ' ⚠️' : ''}</span>` : '–'}</td>
+      <td class="actions">
+        <button class="mini-green" onclick='editarSalud(${JSON.stringify(r)})'>Editar</button>
+        <button class="mini-red" onclick="eliminarSalud(${r.id})">Eliminar</button>
+      </td>
+    </tr>`).join('');
+}
 
-<section class="card">
+function renderAlertas() {
+  const hoy = new Date().toISOString().slice(0,10);
+  const en7 = new Date(); en7.setDate(en7.getDate()+7);
+  const en7s = en7.toISOString().slice(0,10);
+  const pend = saludData.filter(r => r.prox && r.prox <= en7s).sort((a,b) => a.prox.localeCompare(b.prox));
+  const el = document.getElementById('alertasSalud');
+  el.innerHTML = pend.length
+    ? pend.map(r => `<div class="alert-item ${r.prox < hoy ? 'danger' : 'warning'}"><strong>${r.animal}:</strong> ${r.tipo} – ${r.prox}${r.prox < hoy ? ' <strong>VENCIDO</strong>' : ''}</div>`).join('')
+    : '<div class="empty-state"><div class="icon">✅</div><p>Sin pendientes próximos</p></div>';
+}
 
-<div class="panel-title">
-<h3>Historial sanitario</h3>
-</div>
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-<tr>
-<th>Animal</th>
-<th>Control</th>
-<th>Fecha</th>
-<th>Veterinario</th>
-<th>Acciones</th>
-</tr>
-</thead>
-
-<tbody>
-
-<tr>
-<td>Luna</td>
-<td>Vacunación</td>
-<td>10/03/2026</td>
-<td>Dr. Pérez</td>
-<td class="actions">
-<button class="mini-blue">Editar</button>
-<button class="mini-red">Eliminar</button>
-</td>
-</tr>
-
-<tr>
-<td>Estrella</td>
-<td>Chequeo</td>
-<td>05/03/2026</td>
-<td>Dra. Ramírez</td>
-<td class="actions">
-<button class="mini-blue">Editar</button>
-<button class="mini-red">Eliminar</button>
-</td>
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
-
-</section>
-
-</main>
-
-</div>
-
+function renderResumen() {
+  const hoy = new Date().toISOString().slice(0,10);
+  const en7 = new Date(); en7.setDate(en7.getDate()+7);
+  const en7s = en7.toISOString().slice(0,10);
+  document.getElementById('totalReg').textContent     = saludData.length;
+  document.getElementById('totalVacunas').textContent = saludData.filter(r=>r.tipo==='Vacuna').length;
+  document.getElementById('totalTrat').textContent    = saludData.filter(r=>r.tipo==='Tratamiento').length;
+  document.getElementById('totalPend').textContent    = saludData.filter(r=>r.prox && r.prox<=en7s).length;
+}
+</script>
 </body>
 </html>
