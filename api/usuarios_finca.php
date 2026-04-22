@@ -8,7 +8,7 @@ $uid    = $user['id'];
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo    = getDB();
 
-// ─── GET: listar usuarios de la finca ───
+//  GET: listar usuarios de la finca 
 if ($method === 'GET') {
     $stmt = $pdo->prepare(
         'SELECT id, nombre, rol, estado FROM hf_usuarios_finca WHERE id_propietario = ?'
@@ -17,7 +17,7 @@ if ($method === 'GET') {
     jsonOk($stmt->fetchAll());
 }
 
-// ─── POST: agregar usuario ───
+//  POST: agregar usuario 
 if ($method === 'POST') {
     $b      = getBody();
     $nombre = trim($b['nombre'] ?? '');
@@ -31,7 +31,7 @@ if ($method === 'POST') {
     jsonOk(['id' => $pdo->lastInsertId()], 'Usuario agregado');
 }
 
-// ─── DELETE: eliminar usuario ───
+//  DELETE: eliminar usuario 
 if ($method === 'DELETE') {
     $id = (int)($_GET['id'] ?? 0);
     if (!$id) jsonError('ID requerido');
