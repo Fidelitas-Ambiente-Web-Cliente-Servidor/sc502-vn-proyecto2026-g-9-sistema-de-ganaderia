@@ -8,7 +8,7 @@ $uid    = $user['id'];
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo    = getDB();
 
-//  GET: listar todos 
+// ─── GET: listar todos ───
 if ($method === 'GET') {
     $stmt = $pdo->prepare(
         'SELECT id, categoria AS cat,
@@ -20,7 +20,7 @@ if ($method === 'GET') {
     jsonOk($stmt->fetchAll());
 }
 
-//  POST: crear gasto 
+// ─── POST: crear gasto ───
 if ($method === 'POST') {
     $b     = getBody();
     $monto = (float)($b['monto'] ?? 0);
@@ -43,7 +43,7 @@ if ($method === 'POST') {
     jsonOk(['id' => $pdo->lastInsertId()], 'Gasto registrado');
 }
 
-//  PUT: actualizar gasto 
+// ─── PUT: actualizar gasto ───
 if ($method === 'PUT') {
     $b     = getBody();
     $id    = (int)($b['id'] ?? 0);
@@ -72,7 +72,7 @@ if ($method === 'PUT') {
     jsonOk(null, 'Gasto actualizado');
 }
 
-//  DELETE: eliminar gasto 
+// ─── DELETE: eliminar gasto ───
 if ($method === 'DELETE') {
     $id = (int)($_GET['id'] ?? 0);
     if (!$id) jsonError('ID requerido');

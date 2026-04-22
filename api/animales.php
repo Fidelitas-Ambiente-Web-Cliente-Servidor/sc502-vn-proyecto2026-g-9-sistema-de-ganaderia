@@ -1,4 +1,4 @@
-    <?php
+<?php
 // api/animales.php — CRUD de animales
 require_once __DIR__ . '/../config/db.php';
 
@@ -8,7 +8,7 @@ $uid    = $user['id'];
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo    = getDB();
 
-//  GET: listar todos 
+// ─── GET: listar todos ───
 if ($method === 'GET') {
     $stmt = $pdo->prepare(
         'SELECT id, identificacion, nombre, raza, sexo,
@@ -20,7 +20,7 @@ if ($method === 'GET') {
     jsonOk($stmt->fetchAll());
 }
 
-//  POST: crear animal 
+// ─── POST: crear animal ───
 if ($method === 'POST') {
     $b = getBody();
     $id_anim  = trim($b['identificacion'] ?? '');
@@ -51,7 +51,7 @@ if ($method === 'POST') {
     jsonOk(['id' => $pdo->lastInsertId()], 'Animal registrado');
 }
 
-//  PUT: actualizar animal 
+// ─── PUT: actualizar animal ───
 if ($method === 'PUT') {
     $b  = getBody();
     $id = (int)($b['id'] ?? 0);
@@ -89,7 +89,7 @@ if ($method === 'PUT') {
     jsonOk(null, 'Animal actualizado');
 }
 
-//  DELETE: eliminar animal 
+// ─── DELETE: eliminar animal ───
 if ($method === 'DELETE') {
     $id = (int)($_GET['id'] ?? 0);
     if (!$id) jsonError('ID requerido');
