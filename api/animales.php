@@ -1,4 +1,4 @@
-<?php
+    <?php
 // api/animales.php — CRUD de animales
 require_once __DIR__ . '/../config/db.php';
 

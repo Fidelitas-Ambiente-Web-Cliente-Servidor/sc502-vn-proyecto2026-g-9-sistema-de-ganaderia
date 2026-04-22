@@ -15,11 +15,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   // ── LOGIN ──
-  window.registerUser = async function() {
-    const nombre = document.getElementById('rNombre').value.trim();
-    const finca  = document.getElementById('rFinca').value.trim();
-    const correo = document.getElementById('rCorreo').value.trim().toLowerCase();
-    const clave  = document.getElementById('rClave').value;
+  window.loginUser = async function() {
+    const correo = document.getElementById('lCorreo').value.trim().toLowerCase();
+    const clave  = document.getElementById('lClave').value;
+    const errEl  = document.getElementById('login-error');
     errEl.style.display = 'none';
 
     if (!correo || !clave) {
