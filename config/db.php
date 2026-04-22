@@ -1,12 +1,12 @@
 <?php
 ob_start();
-error_reporting(0);
-ini_set('display_errors', 0);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-define('DB_HOST', 'db');
-define('DB_NAME', 'appdb');
-define('DB_USER', 'appuser');
-define('DB_PASS', 'apppass');
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'happy_farmer');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 function getDB(): PDO {
